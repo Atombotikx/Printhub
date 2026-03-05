@@ -183,6 +183,8 @@ export default function AdminDashboard() {
 
             setMigrationNeeded(false)
         } catch (err: any) {
+            console.error('fetchData error:', err)
+        } finally {
             setRefreshing(false)
         }
     }
