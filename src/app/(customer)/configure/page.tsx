@@ -49,7 +49,7 @@ function ConfigureContent() {
 
     const [fileData, setFileData] = useState<FileData | null>(null)
     const [material, setMaterial] = useState<FilamentKey>('PLA')
-    const [quantity, setQuantity] = useState(1)
+    const [quantity, setQuantity] = useState<number | string>(1)
     const [color, setColor] = useState('#ffffff')
     const [parameters, setParameters] = useState<STLParameters | null>(null)
     const [loading, setLoading] = useState(true)
@@ -503,7 +503,7 @@ function ConfigureContent() {
                 fileUrl: persistentUrl || fileData.url,
                 material,
                 color,
-                quantity,
+                quantity: Number(quantity) || 1,
                 price: detailedPrice ? detailedPrice.totalCost : 0,
                 volume: parameters.volume,
                 weight: parameters.weight,
@@ -560,7 +560,7 @@ function ConfigureContent() {
                 const updates: Partial<CartItem> = {
                     material: material,
                     color: color,
-                    quantity: quantity,
+                    quantity: Number(quantity) || 1,
                     price: detailedPrice ? detailedPrice.totalCost : 0,
                     volume: parameters.volume,
                     weight: parameters.weight,
@@ -591,7 +591,7 @@ function ConfigureContent() {
                     fileUrl: persistentFileUrl, // Use persistent URL
                     material,
                     color,
-                    quantity,
+                    quantity: Number(quantity) || 1,
                     price: detailedPrice ? detailedPrice.totalCost : 0,
                     volume: parameters.volume,
                     weight: parameters.weight,
@@ -676,7 +676,7 @@ function ConfigureContent() {
     const detailedPrice = parameters ? calculateDetailedPrice({
         volumeCm3: parameters.volume,
         material: material as FilamentKey,
-        quantity,
+        quantity: Number(quantity) || 1,
         layerHeight: 0.2, // Consistent with other removed options
         infill,
         infillPattern,
@@ -1136,11 +1136,24 @@ function ConfigureContent() {
                         <div className={styles.controlGroup}>
                             <label>Quantity</label>
                             <div className={styles.quantity}>
-                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className={styles.qBtn} type="button">
+                                <button onClick={() => setQuantity(Math.max(1, (Number(quantity) || 1) - 1))} className={styles.qBtn} type="button">
                                     <Minus size={14} />
                                 </button>
-                                <span>{quantity}</span>
-                                <button onClick={() => setQuantity(quantity + 1)} className={styles.qBtn} type="button">
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={quantity}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setQuantity(val === '' ? '' : parseInt(val, 10));
+                                    }}
+                                    onBlur={() => {
+                                        if (quantity === '' || Number(quantity) < 1 || isNaN(Number(quantity))) setQuantity(1);
+                                    }}
+                                    className={styles.hideArrows}
+                                    style={{ width: '46px', textAlign: 'center', background: 'transparent', border: 'none', color: 'white', fontSize: '1rem', outline: 'none' }}
+                                />
+                                <button onClick={() => setQuantity((Number(quantity) || 1) + 1)} className={styles.qBtn} type="button">
                                     <Plus size={14} />
                                 </button>
                             </div>

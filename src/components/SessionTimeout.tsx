@@ -4,29 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { useToastStore } from '@/store/toastStore'
+import { useAuthStore } from '@/store/authStore'
 
 export default function SessionTimeout() {
     const router = useRouter()
     const timeoutRef = useRef<ReturnType<typeof globalThis.setTimeout> | null>(null)
-    const [isAdmin, setIsAdmin] = useState<boolean>(false)
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-
-    useEffect(() => {
-        const supabase = createClient()
-        const subscription = supabase.auth.onAuthStateChange(async (_event, session) => {
-            if (session?.user) {
-                setIsLoggedIn(true)
-                const { isCurrentUserAdmin } = await import('@/app/admin/actions')
-                const status = await isCurrentUserAdmin()
-                setIsAdmin(status)
-            } else {
-                setIsLoggedIn(false)
-                setIsAdmin(false)
-            }
-        }).data.subscription
-
-        return () => subscription.unsubscribe()
-    }, [])
+    const { isAdmin, user } = useAuthStore()
+    const isLoggedIn = !!user
 
     useEffect(() => {
         if (!isLoggedIn) {

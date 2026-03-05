@@ -15,8 +15,7 @@ import Loader from '@/components/Loader'
 // Load STLViewer dynamically (no SSR — it uses WebGL)
 const STLViewer = dynamic(() => import('@/components/STLViewer'), { ssr: false, loading: () => <Loader text="Preparing 3D model..." fullPage={false} /> })
 
-const ADMIN_EMAILS_ENV = process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
-const ADMINS = ADMIN_EMAILS_ENV.split(',').map(e => e.trim().toLowerCase())
+// Removed client-side admin email list for security
 
 const STATUS_OPTIONS = [
     { value: 'ordered', label: 'Ordered', emoji: '🆕' },
@@ -303,24 +302,45 @@ export default function AdminOrdersPage() {
 
 
     useEffect(() => {
-        const supabase = createClient()
         const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(prev => prev?.id === user?.id ? prev : user)
-            setLoading(false)
-            if (!user || !ADMINS.includes(user.email?.toLowerCase() || '')) router.push('/')
+            try {
+                const { isCurrentUserAdmin } = await import('../actions')
+                const isAdmin = await isCurrentUserAdmin()
+                if (!isAdmin) {
+                    router.push('/')
+                    return
+                }
+                const supabase = createClient()
+                const { data: { user } } = await supabase.auth.getUser()
+                setUser(prev => prev?.id === user?.id ? prev : user)
+                setLoading(false)
+            } catch (err) {
+                console.error('[Admin] Auth Error:', err)
+                router.push('/')
+            }
         }
         checkUser()
     }, [router])
 
     useEffect(() => {
-        if (ADMINS.includes(user?.email?.toLowerCase() || '')) {
-            const supabase = createClient()
-            fetchOrders()
-            const ch = supabase.channel('admin-orders-rt')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchOrders)
-                .subscribe()
-            return () => { supabase.removeChannel(ch) }
+        let channel: any = null
+        const setupRealtime = async () => {
+            const { isCurrentUserAdmin } = await import('../actions')
+            const isAdmin = await isCurrentUserAdmin()
+            if (isAdmin) {
+                const supabase = createClient()
+                fetchOrders()
+                channel = supabase.channel('admin-orders-rt')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchOrders)
+                    .subscribe()
+            }
+        }
+        setupRealtime()
+        return () => {
+            if (channel) {
+                const supabase = createClient()
+                supabase.removeChannel(channel)
+            }
         }
     }, [user])
 

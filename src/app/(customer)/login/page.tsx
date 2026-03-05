@@ -1,5 +1,5 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Loader from '@/components/Loader'
 import styles from './Login.module.css'
 import Link from 'next/link'
@@ -14,12 +14,30 @@ import { isCurrentUserAdmin } from '@/app/admin/actions'
 function LoginContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const redirectTo = searchParams.get('redirectTo') || '/'
+    const redirectTo = searchParams.get('callbackUrl') || searchParams.get('redirectTo') || '/'
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
+    const [authChecking, setAuthChecking] = useState(true)
     const [error, setError] = useState('')
+
+    // 1. If already logged in, move away from login page
+    useEffect(() => {
+        const checkExisting = async () => {
+            const supabase = createClient()
+            const { data: { session } } = await supabase.auth.getSession()
+            if (session) {
+                // If they have a session, move them away
+                const { isCurrentUserAdmin } = await import('@/app/admin/actions')
+                const isAdmin = await isCurrentUserAdmin()
+                window.location.href = isAdmin ? '/admin' : redirectTo
+            } else {
+                setAuthChecking(false)
+            }
+        }
+        checkExisting()
+    }, [redirectTo])
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -36,11 +54,14 @@ function LoginContent() {
             setError(error.message)
             setLoading(false)
         } else {
-            const isAdmin = await isCurrentUserAdmin()
-            if (isAdmin) {
-                router.push('/admin')
-            } else {
-                router.push(redirectTo)
+            // Check admin status
+            try {
+                const isAdmin = await isCurrentUserAdmin()
+                // Use window.location.href for a hard redirect. 
+                // This ensures cookies are fully flushed and the middleware definitely sees the new session.
+                window.location.href = isAdmin ? '/admin' : redirectTo
+            } catch (err) {
+                window.location.href = redirectTo
             }
         }
     }
@@ -67,6 +88,10 @@ function LoginContent() {
             console.error('Google login error:', err)
             setError('An unexpected error occurred')
         }
+    }
+
+    if (authChecking) {
+        return <Loader text="Checking session..." />
     }
 
     return (

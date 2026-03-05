@@ -850,3 +850,14 @@
     border-color: rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.5);
 }
+
+.hideArrows::-webkit-outer-spin-button,
+.hideArrows::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.hideArrows[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}

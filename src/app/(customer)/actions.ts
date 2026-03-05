@@ -117,3 +117,35 @@ export async function getCustomerDownloadUrl(filePath: string, fileName: string)
     }
 }
 
+import { createClient as createSupabaseCore } from '@supabase/supabase-js'
+
+/**
+ * Returns a short-lived signed URL for the payment QR stored in the prints bucket.
+ * Uses service role to bypass RLS on storage read.
+ * Available only to authenticated customers.
+ */
+export async function getCustomerPaymentQrSignedUrl() {
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            return { data: null, error: 'Unauthorized: You must be logged in' }
+        }
+
+        const serviceDb = createSupabaseCore(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+        )
+
+        const { data, error } = await serviceDb.storage
+            .from('prints')
+            .createSignedUrl('qrs/payment-qr.png', SIGNED_URL_TIMEOUT)
+
+        if (error) throw error
+        return { data: data.signedUrl, error: null }
+    } catch (err: any) {
+        return { data: null, error: err.message }
+    }
+}
+

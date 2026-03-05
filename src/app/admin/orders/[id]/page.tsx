@@ -6,14 +6,14 @@ import { formatCurrency } from '@/utils/pricingEngine'
 import dynamic from 'next/dynamic'
 import { Truck, Package, FileText, Eye, Download, ChevronLeft, ChevronDown, Check, Box, Save, X, RefreshCw, Upload, RotateCcw, AlertTriangle } from 'lucide-react'
 import { useToastStore } from '@/store/toastStore'
+import { useAuthStore } from '@/store/authStore'
 import { getAdminOrderById, updateOrderAdmin, getSignedModelUrl, adminHandleReturnRequest, getAdminPaymentProofUrl, getAdminReturnEvidenceUrls } from '../../actions'
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
 
 const STLViewer = dynamic(() => import('@/components/STLViewer'), { ssr: false, loading: () => <Loader text="Preparing 3D model..." fullPage={false} /> })
 
-const ADMIN_EMAILS_ENV = process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
-const ADMINS = ADMIN_EMAILS_ENV.split(',').map(e => e.trim().toLowerCase())
+// Removed client-side admin email list for security
 
 const STATUS_OPTIONS = [
     { value: 'ordered', label: 'Ordered', emoji: '🆕' },
@@ -98,7 +98,7 @@ export default function OrderDetailPage() {
     const router = useRouter()
     const addToast = useToastStore((state) => state.addToast)
 
-    const [user, setUser] = useState<any>(null)
+    const { isAdmin, isLoading: authLoading } = useAuthStore()
     const [order, setOrder] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [updating, setUpdating] = useState(false)
@@ -109,6 +109,7 @@ export default function OrderDetailPage() {
     const [adminReturnNote, setAdminReturnNote] = useState('')
     const [handlingReturn, setHandlingReturn] = useState(false)
     const [returnEvidenceUrls, setReturnEvidenceUrls] = useState<string[]>([])
+    const [isProcessingModelUrls, setIsProcessingModelUrls] = useState(false)
 
     // Viewer settings
     const [showCrossSection, setShowCrossSection] = useState(false)
@@ -118,57 +119,57 @@ export default function OrderDetailPage() {
     const [showWireframe, setShowWireframe] = useState(false)
 
     useEffect(() => {
-        const supabase = createClient()
-        const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            const userEmail = user?.email?.toLowerCase() || ''
-            if (!user || !ADMINS.includes(userEmail) || user.app_metadata?.provider !== 'email') {
+        if (!authLoading) {
+            if (!isAdmin) {
                 router.push('/')
-                return
+            } else if (id) {
+                fetchOrder()
             }
-            setUser(user)
         }
-        checkUser()
-    }, [router])
-
-    useEffect(() => {
-        if (user && id) { // Only fetch order if user is authenticated and id is available
-            fetchOrder()
-        }
-    }, [user, id]) // Depend on user and id
+    }, [isAdmin, authLoading, id, router])
 
     const fetchOrder = async () => {
+        if (!id) return
         setLoading(true)
-        const { data, error } = await getAdminOrderById(id as string)
-        setLoading(false)
-        if (error) {
-            addToast('Failed to load order', 'error')
-            router.push('/admin/orders')
-        } else {
+        try {
+            const { data, error } = await getAdminOrderById(id as string)
+            if (error) {
+                addToast('Failed to load order', 'error')
+                router.push('/admin/orders')
+                return
+            }
+
             setOrder(data)
             setTrack(data.tracking_number || '')
             setAdminReturnNote(data.admin_return_note || '')
-            // Find payment proof if exists
+
+            // Background tasks
             fetchPaymentProof(data.id, data.user_id)
-            // Fetch return evidence URLs securely (overriding whatever is stored in DB to ensure fresh signed URLs)
             fetchReturnEvidence(data.id, data.user_id)
 
             // Resolve signed URLs for all items
             if (data.order_items && data.order_items.length > 0) {
-                const enrichedItems = await Promise.all(data.order_items.map(async (item: any) => {
-                    if (item.file_url && !item.file_url.startsWith('http') && !item.file_url.startsWith('blob:')) {
-                        const res = await getSignedModelUrl(item.file_url)
-                        if (res.data) {
-                            return { ...item, original_path: item.file_url, file_url: res.data }
+                setIsProcessingModelUrls(true)
+                try {
+                    const enrichedItems = await Promise.all(data.order_items.map(async (item: any) => {
+                        if (item.file_url && !item.file_url.startsWith('http') && !item.file_url.startsWith('blob:')) {
+                            const res = await getSignedModelUrl(item.file_url)
+                            if (res.data) {
+                                return { ...item, original_path: item.file_url, file_url: res.data }
+                            }
                         }
-                    }
-                    return item
-                }))
-                setOrder({ ...data, order_items: enrichedItems })
-                setActiveFile(enrichedItems[0])
-            } else {
-                setOrder(data)
+                        return item
+                    }))
+                    setOrder({ ...data, order_items: enrichedItems })
+                    setActiveFile(enrichedItems[0])
+                } finally {
+                    setIsProcessingModelUrls(false)
+                }
             }
+        } catch (err) {
+            console.error('fetchOrder error:', err)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -489,7 +490,7 @@ export default function OrderDetailPage() {
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '12px' }}>
                                             <div style={{ textAlign: 'right' }}>
                                                 <div style={{ fontSize: '0.7rem', opacity: 0.4, textTransform: 'uppercase' }}>Item Total</div>
-                                                <div style={{ fontWeight: 800, fontSize: '1.4rem', color: '#39ff14' }}>{formatCurrency(item.price * (item.quantity || 1))}</div>
+                                                <div style={{ fontWeight: 800, fontSize: '1.4rem', color: '#39ff14' }}>{formatCurrency(item.price)}</div>
                                             </div>
                                             <button
                                                 onClick={(e) => handleDownloadSTL(e, item.file_url, item.file_name)}

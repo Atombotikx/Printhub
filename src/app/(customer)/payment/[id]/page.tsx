@@ -8,6 +8,7 @@ import styles from '../Payment.module.css'
 import { useToastStore } from '@/store/toastStore'
 import Image from 'next/image'
 import { submitPaymentProof } from '../actions'
+import { getCustomerPaymentQrSignedUrl } from '@/app/(customer)/actions'
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
 
@@ -27,7 +28,17 @@ export default function PaymentPage() {
 
     useEffect(() => {
         const supabase = createClient()
-        setQrUrl(`${supabase.storage.from('prints').getPublicUrl('payments/payment-qr.png').data.publicUrl}?v=1`)
+
+        const fetchQr = async () => {
+            const { data } = await getCustomerPaymentQrSignedUrl()
+            if (data) {
+                setQrUrl(data)
+                setQrError(false)
+            } else {
+                setQrError(true)
+            }
+        }
+        fetchQr()
 
         const fetchOrder = async () => {
             try {
@@ -120,14 +131,16 @@ export default function PaymentPage() {
     return (
         <div className={styles.container}>
             <div className={styles.pageHeader}>
-                <div className={styles.headerLeft}>
-                    <BackButton fallback="/orders" />
+                <div className={styles.headerTitleRow}>
+                    <div className={styles.headerLeft}>
+                        <BackButton fallback="/orders" />
+                    </div>
+                    <div className={styles.headerContent}>
+                        <h1 className="title-gradient" style={{ margin: 0 }}>Payment required</h1>
+                    </div>
+                    <div className={styles.headerRight} />
                 </div>
-                <div className={styles.headerContent}>
-                    <h1 className="title-gradient">Payment required</h1>
-                    <p className={styles.subtitle}>Scan and upload proof to confirm your print order</p>
-                </div>
-                <div className={styles.headerRight} />
+                <p className={styles.subtitle}>Scan and upload proof to confirm your print order</p>
             </div>
 
             <div className={`${styles.paymentCard} glass`}>
@@ -148,13 +161,17 @@ export default function PaymentPage() {
                             <div style={{ color: '#333', textAlign: 'center', padding: '20px' }}>
                                 QR Code currently unavailable.<br />Please contact support.
                             </div>
-                        ) : (
+                        ) : qrUrl ? (
                             <img
                                 src={qrUrl}
                                 alt="Payment QR Code"
                                 style={{ width: '200px', height: '200px', objectFit: 'contain' }}
                                 onError={() => setQrError(true)}
                             />
+                        ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px' }}>
+                                <Loader2 className="spin" size={32} />
+                            </div>
                         )}
                     </div>
                     <span style={{ fontSize: '0.8rem', marginTop: '12px', display: 'block' }}>UPI ID: printhub@okaxis</span>

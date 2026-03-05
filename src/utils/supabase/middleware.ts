@@ -52,7 +52,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     // 2. Admin Only security & Redirects
-    const ADMIN_EMAILS_ENV = process.env.NEXT_PUBLIC_ADMIN_EMAILS || process.env.ADMIN_EMAILS || ''
+    const ADMIN_EMAILS_ENV = process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
     const ADMINS = ADMIN_EMAILS_ENV.split(',').map(e => e.trim().toLowerCase())
     const isAdmin = user &&
         ADMINS.includes(user.email?.toLowerCase() || '') &&

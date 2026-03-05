@@ -5,9 +5,9 @@ import styles from './Settings.module.css'
 import { User, MapPin, Plus, Trash2, Settings as SettingsIcon, Bell, Moon, Shield, Zap, DollarSign, Activity } from 'lucide-react'
 import BackButton from '@/components/BackButton'
 import { createClient } from '@/utils/supabase/client'
-import { User as SupabaseUser } from '@supabase/supabase-js'
 import { useToastStore } from '@/store/toastStore'
 import { useAdminStore } from '@/store/adminStore'
+import { useAuthStore } from '@/store/authStore'
 import Loader from '@/components/Loader'
 
 interface Address {
@@ -25,14 +25,15 @@ export default function SettingsPage() {
     const {
         electricityRate,
         miscellaneousFee,
-        updateGlobalSettings
+        updateGlobalSettings,
+        fetchSettings
     } = useAdminStore()
 
-    const [user, setUser] = useState<SupabaseUser | null>(null)
+    const { user: authUser, isAdmin, isLoading: authLoading } = useAuthStore()
     const [loading, setLoading] = useState(true)
+    const [isProcessing, setIsProcessing] = useState(false)
 
     // Admin Specific State
-    const [isAdmin, setIsAdmin] = useState(false)
     const [localElecRate, setLocalElecRate] = useState(electricityRate)
     const [localMiscFee, setLocalMiscFee] = useState(miscellaneousFee)
     const [maintenanceMode, setMaintenanceMode] = useState(false)
@@ -56,76 +57,80 @@ export default function SettingsPage() {
     })
 
     useEffect(() => {
-        loadUserData()
-        // Sync local admin state with store on mount
-        setLocalElecRate(electricityRate)
-        setLocalMiscFee(miscellaneousFee)
-    }, [])
-
-    const loadUserData = async () => {
-        const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
+        if (!authLoading && !authUser) {
             router.push('/login')
             return
         }
 
-        setUser(user)
-        setIsAdmin(user.email ? (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').includes(user.email) : false)
-        setFullName(user.user_metadata?.full_name || '')
-
-        if (user.email && (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').includes(user.email)) {
-            // Default admin tab to 'configuration'
-            setActiveTab('configuration')
-        }
-
-        // Load user_details (for name and phone)
-        const { data: details } = await supabase
-            .from('user_details')
-            .select('*')
-            .eq('user_id', user.id)
-            .single()
-
-        if (details) {
-            setFullName(details.full_name || user.user_metadata?.full_name || '')
-            setPhone(details.phone || '')
-        } else {
-            // Fallback to metadata if no DB record yet
-            setFullName(user.user_metadata?.full_name || '')
-        }
-
-        // Load addresses (Only for non-admin)
-        if (!user.email || !(process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').includes(user.email)) {
-            const { data: addrs } = await supabase
-                .from('addresses')
-                .select('*')
-                .eq('user_id', user.id)
-
-            if (addrs) {
-                setAddresses(addrs)
+        if (!authLoading && authUser) {
+            setFullName(authUser.name || '')
+            if (isAdmin) {
+                setActiveTab('configuration')
             }
+            loadProfileAndAddresses()
         }
+    }, [authLoading, authUser, isAdmin, router])
 
-        setLoading(false)
+    // Sync local admin state with store
+    useEffect(() => {
+        setLocalElecRate(electricityRate)
+        setLocalMiscFee(miscellaneousFee)
+    }, [electricityRate, miscellaneousFee])
+
+    const loadProfileAndAddresses = async () => {
+        if (!authUser) return
+        const supabase = createClient()
+        setLoading(true)
+
+        try {
+            // Load user_details (for name and phone)
+            const { data: details } = await supabase
+                .from('user_details')
+                .select('*')
+                .eq('user_id', authUser.id)
+                .single()
+
+            if (details) {
+                setFullName(details.full_name || authUser.name || '')
+                setPhone(details.phone || '')
+            }
+
+            // Load addresses (Only for non-admin)
+            if (!isAdmin) {
+                const { data: addrs } = await supabase
+                    .from('addresses')
+                    .select('*')
+                    .eq('user_id', authUser.id)
+
+                if (addrs) setAddresses(addrs)
+            }
+
+            if (isAdmin) {
+                fetchSettings()
+            }
+        } catch (err) {
+            console.error('Failed to load profile details:', err)
+        } finally {
+            setLoading(false)
+        }
     }
 
-    const saveAdminSettings = () => {
-        updateGlobalSettings({
-            electricityRate: Number(localElecRate),
-            miscellaneousFee: Number(localMiscFee)
-        })
-        addToast('Global settings updated!', 'success')
+    const saveAdminSettings = async () => {
+        setIsProcessing(true)
+        try {
+            await updateGlobalSettings({
+                electricityRate: Number(localElecRate),
+                miscellaneousFee: Number(localMiscFee)
+            })
+            addToast('Global settings updated!', 'success')
+        } finally {
+            setIsProcessing(false)
+        }
     }
-
-    if (loading) {
-        return <Loader text="Loading profile..." />
-    }
-
-    if (!user) return null
-
 
     const saveProfile = async () => {
-        if (!user) return
+        if (!authUser) return
+        setIsProcessing(true)
 
         try {
             const supabase = createClient()
@@ -139,7 +144,7 @@ export default function SettingsPage() {
             const { error: detailError } = await supabase
                 .from('user_details')
                 .upsert({
-                    user_id: user.id,
+                    user_id: authUser.id,
                     full_name: fullName,
                     phone: phone,
                     updated_at: new Date().toISOString()
@@ -147,23 +152,23 @@ export default function SettingsPage() {
 
             if (detailError) throw detailError
 
-            // Re-fetch user to get updated metadata locally
-            const { data: { user: updatedUser } } = await supabase.auth.getUser()
-            setUser(updatedUser)
             addToast('Profile saved!', 'success')
         } catch (error) {
             addToast('Failed to save profile', 'error')
+        } finally {
+            setIsProcessing(false)
         }
     }
 
     const handleAddAddress = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!user) return
+        if (!authUser) return
+        setIsProcessing(true)
 
         try {
             const supabase = createClient()
             const addressPayload = {
-                user_id: user.id,
+                user_id: authUser.id,
                 full_name: newAddress.full_name,
                 address_line1: newAddress.address_line1,
                 city: newAddress.city,
@@ -172,7 +177,6 @@ export default function SettingsPage() {
             }
 
             if (editingId) {
-                // Update existing
                 const { data, error } = await supabase
                     .from('addresses')
                     .update(addressPayload)
@@ -185,7 +189,6 @@ export default function SettingsPage() {
                     addToast('Address updated successfully!', 'success')
                 }
             } else {
-                // Insert new
                 const { data, error } = await supabase
                     .from('addresses')
                     .insert(addressPayload)
@@ -203,6 +206,8 @@ export default function SettingsPage() {
             setEditingId(null)
         } catch (error) {
             addToast('Failed to save address', 'error')
+        } finally {
+            setIsProcessing(false)
         }
     }
 
@@ -219,7 +224,7 @@ export default function SettingsPage() {
         } else {
             setEditingId(null)
             setNewAddress({
-                full_name: user?.user_metadata?.full_name || '',
+                full_name: authUser?.name || '',
                 address_line1: '',
                 city: '',
                 zip_code: '',
@@ -238,14 +243,12 @@ export default function SettingsPage() {
     const handleDeleteAddress = async (id: string) => {
         try {
             const supabase = createClient()
-            const { error, count } = await supabase
+            const { error } = await supabase
                 .from('addresses')
-                .delete({ count: 'exact' })
+                .delete()
                 .eq('id', id)
 
             if (error) throw error
-
-            // Update local state
             setAddresses(addresses.filter(addr => addr.id !== id))
             addToast('Address deleted successfully!', 'success')
         } catch (error: any) {
@@ -253,6 +256,11 @@ export default function SettingsPage() {
         }
     }
 
+    if (loading || authLoading) {
+        return <Loader text="Loading profile..." />
+    }
+
+    if (!authUser) return null
 
     return (
         <div className={styles.container}>
@@ -262,19 +270,18 @@ export default function SettingsPage() {
             </div>
 
             <div className={styles.grid}>
-                {/* Sidebar */}
                 <div className={styles.sidebar}>
                     <div className={styles.userInfo}>
                         <div className={styles.avatar}>
-                            {user.user_metadata?.avatar_url ? (
-                                <img src={user.user_metadata.avatar_url} alt={user.user_metadata.full_name || 'User'} />
+                            {authUser.image ? (
+                                <img src={authUser.image} alt={authUser.name || 'User'} />
                             ) : (
                                 <User size={40} />
                             )}
                         </div>
                         <div className={styles.userDetails}>
-                            <h3>{user.user_metadata?.full_name || 'User'}</h3>
-                            <p>{user.email}</p>
+                            <h3>{authUser.name || 'User'}</h3>
+                            <p>{authUser.email}</p>
                             {isAdmin && <span className={styles.badge}>ADMIN</span>}
                         </div>
                     </div>
@@ -307,12 +314,9 @@ export default function SettingsPage() {
                                 Addresses
                             </button>
                         )}
-
-
                     </nav>
                 </div>
 
-                {/* Content Area */}
                 <div className={styles.content}>
                     {activeTab === 'configuration' && isAdmin && (
                         <div className={styles.section}>
@@ -328,10 +332,10 @@ export default function SettingsPage() {
                                     <input
                                         type="number"
                                         value={localElecRate}
-                                        onChange={(e) => setLocalElecRate(parseFloat(e.target.value))}
+                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                        onChange={(e) => setLocalElecRate(parseFloat(e.target.value) || 0)}
                                         className={styles.input}
                                     />
-                                    <p className={styles.hint}>Used to calculate print cost based on estimated print hours.</p>
                                 </div>
 
                                 <div className={styles.formGroup}>
@@ -342,34 +346,19 @@ export default function SettingsPage() {
                                     <input
                                         type="number"
                                         value={localMiscFee}
-                                        onChange={(e) => setLocalMiscFee(parseFloat(e.target.value))}
+                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                        onChange={(e) => setLocalMiscFee(parseFloat(e.target.value) || 0)}
                                         className={styles.input}
                                     />
-                                    <p className={styles.hint}>Flat fee added to every line item for handling/packaging.</p>
                                 </div>
 
-                                <div className={styles.divider}></div>
-
-                                <div className={styles.formGroup} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <Activity size={24} color={maintenanceMode ? '#ff4d4d' : '#888'} />
-                                        <div>
-                                            <label style={{ margin: 0, fontSize: '1rem', color: 'white' }}>Maintenance Mode</label>
-                                            <p className={styles.hint} style={{ margin: 0 }}>Disable new uploads and orders</p>
-                                        </div>
-                                    </div>
-                                    <label className={styles.switch}>
-                                        <input
-                                            type="checkbox"
-                                            checked={maintenanceMode}
-                                            onChange={(e) => setMaintenanceMode(e.target.checked)}
-                                        />
-                                        <span className={styles.slider}></span>
-                                    </label>
-                                </div>
-
-                                <button className={styles.saveBtn} onClick={saveAdminSettings} style={{ marginTop: '24px' }}>
-                                    Update Global Settings
+                                <button
+                                    className={styles.saveBtn}
+                                    onClick={saveAdminSettings}
+                                    style={{ marginTop: '24px' }}
+                                    disabled={isProcessing}
+                                >
+                                    {isProcessing ? 'Updating...' : 'Update Global Settings'}
                                 </button>
                             </form>
                         </div>
@@ -390,7 +379,7 @@ export default function SettingsPage() {
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Email Address</label>
-                                    <input type="email" defaultValue={user.email || ''} disabled className={styles.input} />
+                                    <input type="email" defaultValue={authUser.email || ''} disabled className={styles.input} />
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Phone Number</label>
@@ -402,7 +391,14 @@ export default function SettingsPage() {
                                         onChange={(e) => setPhone(e.target.value)}
                                     />
                                 </div>
-                                <button className={styles.saveBtn} onClick={saveProfile} type="button">Save Changes</button>
+                                <button
+                                    className={styles.saveBtn}
+                                    onClick={saveProfile}
+                                    disabled={isProcessing}
+                                    type="button"
+                                >
+                                    {isProcessing ? 'Saving...' : 'Save Changes'}
+                                </button>
                             </form>
                         </div>
                     )}
@@ -412,10 +408,7 @@ export default function SettingsPage() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                                 <h2>Saved Addresses</h2>
                                 {!showAddAddress && (
-                                    <button
-                                        className={styles.secondaryBtn}
-                                        onClick={() => openAddressForm()}
-                                    >
+                                    <button className={styles.secondaryBtn} onClick={() => openAddressForm()}>
                                         <Plus size={18} /> Add New
                                     </button>
                                 )}
@@ -428,7 +421,7 @@ export default function SettingsPage() {
                                     </h3>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                                         <div className={styles.formGroup}>
-                                            <label>Full Name (Recipient)</label>
+                                            <label>Full Name</label>
                                             <input
                                                 placeholder="Recipient's Name"
                                                 className={styles.input}
@@ -438,7 +431,7 @@ export default function SettingsPage() {
                                             />
                                         </div>
                                         <div className={styles.formGroup}>
-                                            <label>Mobile Number</label>
+                                            <label>Mobile</label>
                                             <input
                                                 placeholder="Recipient's Phone"
                                                 className={styles.input}
@@ -451,7 +444,7 @@ export default function SettingsPage() {
                                     <div className={styles.formGroup}>
                                         <label>Street Address</label>
                                         <input
-                                            placeholder="House No, Area, Landmark..."
+                                            placeholder="House No, Area..."
                                             className={styles.input}
                                             value={newAddress.address_line1}
                                             onChange={e => setNewAddress({ ...newAddress, address_line1: e.target.value })}
@@ -470,7 +463,7 @@ export default function SettingsPage() {
                                             />
                                         </div>
                                         <div className={styles.formGroup}>
-                                            <label>ZIP Code</label>
+                                            <label>ZIP</label>
                                             <input
                                                 placeholder="ZIP Code"
                                                 className={styles.input}
@@ -481,14 +474,10 @@ export default function SettingsPage() {
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                                        <button type="submit" className={styles.saveBtn}>
-                                            {editingId ? 'Update Address' : 'Save Address'}
+                                        <button type="submit" className={styles.saveBtn} disabled={isProcessing}>
+                                            {isProcessing ? 'Processing...' : (editingId ? 'Update Address' : 'Save Address')}
                                         </button>
-                                        <button
-                                            type="button"
-                                            className={styles.cancelBtn}
-                                            onClick={closeAddressForm}
-                                        >
+                                        <button type="button" className={styles.cancelBtn} onClick={closeAddressForm}>
                                             Cancel
                                         </button>
                                     </div>
@@ -499,29 +488,15 @@ export default function SettingsPage() {
                                 <div className={styles.addressList}>
                                     {addresses.map(addr => (
                                         <div key={addr.id} className={styles.addressCard}>
-                                            <div className={styles.addressIcon}>
-                                                <MapPin size={24} />
-                                            </div>
+                                            <div className={styles.addressIcon}><MapPin size={24} /></div>
                                             <div className={styles.addressDetails}>
                                                 <h4>{addr.full_name}</h4>
                                                 <p>{addr.address_line1}, {addr.city}, {addr.zip_code}</p>
                                                 {addr.phone && <p style={{ fontSize: '0.8rem', color: 'var(--primary-color)', marginTop: '4px' }}>📞 {addr.phone}</p>}
                                             </div>
                                             <div className={styles.addressItemActions}>
-                                                <button
-                                                    className={styles.editBtn}
-                                                    onClick={() => openAddressForm(addr)}
-                                                    title="Edit Address"
-                                                >
-                                                    <SettingsIcon size={18} />
-                                                </button>
-                                                <button
-                                                    className={styles.deleteBtn}
-                                                    onClick={() => handleDeleteAddress(addr.id)}
-                                                    title="Delete Address"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
+                                                <button className={styles.editBtn} onClick={() => openAddressForm(addr)}><SettingsIcon size={18} /></button>
+                                                <button className={styles.deleteBtn} onClick={() => handleDeleteAddress(addr.id)}><Trash2 size={18} /></button>
                                             </div>
                                         </div>
                                     ))}
@@ -536,7 +511,6 @@ export default function SettingsPage() {
                             )}
                         </div>
                     )}
-
                 </div>
             </div>
         </div>

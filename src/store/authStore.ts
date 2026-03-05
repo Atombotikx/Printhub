@@ -6,24 +6,31 @@ export interface User {
     name: string
     email: string
     image?: string
-    isAdmin?: boolean
 }
 
 interface AuthState {
     user: User | null
-    setUser: (user: User | null) => void
+    isAdmin: boolean
+    isLoading: boolean
+    setUser: (user: User | null, isAdmin: boolean) => void
     logout: () => void
+    setLoading: (loading: boolean) => void
 }
 
 export const useAuthStore = create<AuthState>()(
     persist(
         (set) => ({
             user: null,
-            setUser: (user) => set({ user }),
-            logout: () => set({ user: null }),
+            isAdmin: false,
+            isLoading: true,
+            setUser: (user, isAdmin) => set({ user, isAdmin, isLoading: false }),
+            logout: () => set({ user: null, isAdmin: false, isLoading: false }),
+            setLoading: (isLoading) => set({ isLoading }),
         }),
         {
             name: 'auth-storage',
+            // Only persist user/admin status
+            partialize: (state) => ({ user: state.user, isAdmin: state.isAdmin }),
         }
     )
 )

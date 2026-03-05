@@ -7,16 +7,24 @@
 }
 
 .pageHeader {
-    max-width: 1300px;
+    max-width: 600px;
     margin: 0 auto 48px;
     width: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 8px;
+}
+
+.headerTitleRow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .headerLeft {
-    flex: 0 0 120px;
+    flex: 0 0 60px;
 }
 
 .headerContent {
@@ -25,7 +33,14 @@
 }
 
 .headerRight {
-    flex: 0 0 120px;
+    flex: 0 0 60px;
+}
+
+.subtitle {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    text-align: center;
 }
 
 @keyframes fadeIn {

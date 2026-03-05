@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { useAdminStore } from '@/store/adminStore'
+import { useAuthStore } from '@/store/authStore'
 import { FilamentKey } from '@/utils/pricingEngine'
 import styles from '../Admin.module.css'
 import { Plus, Trash2, X, Edit2, Save, AlertTriangle, ChevronDown } from 'lucide-react'
@@ -11,12 +12,42 @@ import { useToastStore } from '@/store/toastStore'
 import Loader from '@/components/Loader'
 import CustomSelect from '@/components/CustomSelect'
 
+import { useShallow } from 'zustand/react/shallow'
+
 export default function AdminMaterialsPage() {
     const addToast = useToastStore((state) => state.addToast)
     const router = useRouter()
-    const [user, setUser] = useState<User | null>(null)
+    const { user: authUser, isAdmin, isLoading: authLoading } = useAuthStore()
+
     const [loading, setLoading] = useState(true)
     const [isProcessing, setIsProcessing] = useState(false)
+    const [localElec, setLocalElec] = useState<string>('')
+    const [localMisc, setLocalMisc] = useState<string>('')
+    const [localSupp, setLocalSupp] = useState<string>('')
+
+    // Add Material State
+    const [brandName, setBrandName] = useState('')
+    const [materialType, setMaterialType] = useState('PLA')
+    const [newMaterialType, setNewMaterialType] = useState('')
+    const [newTypeDensity, setNewTypeDensity] = useState<string | number>(1.24)
+    const [newTypeProperties, setNewTypeProperties] = useState({
+        strength: 5 as string | number,
+        flexibility: 5 as string | number,
+        heatRes: 5 as string | number,
+        durability: 5 as string | number
+    })
+    const [editingKey, setEditingKey] = useState<FilamentKey | null>(null)
+
+    // Add Color State
+    const [addingColorTo, setAddingColorTo] = useState<FilamentKey | null>(null)
+    const [newColorHex, setNewColorHex] = useState('#ffffff')
+    const [newColorPrice, setNewColorPrice] = useState<string | number>(0)
+
+    // Confirmation states
+    const [deletingMaterialKey, setDeletingMaterialKey] = useState<FilamentKey | null>(null)
+    const [deletingType, setDeletingType] = useState<string | null>(null)
+    const [deletingSupportType, setDeletingSupportType] = useState<string | null>(null)
+    const [newSupportType, setNewSupportType] = useState('')
 
     const {
         filaments, updateFilament, addFilament, renameFilament, removeFilament,
@@ -25,57 +56,46 @@ export default function AdminMaterialsPage() {
         materialTypes, addMaterialType, removeMaterialType,
         supportTypes, addSupportType, removeSupportType,
         hasHydrated, fetchSettings
-    } = useAdminStore()
-
-    // Add Material State
-    const [brandName, setBrandName] = useState('')
-    const [materialType, setMaterialType] = useState('PLA')
-    const [newMaterialType, setNewMaterialType] = useState('')
-    const [newTypeDensity, setNewTypeDensity] = useState(1.24)
-    const [newTypeProperties, setNewTypeProperties] = useState({
-        strength: 5,
-        flexibility: 5,
-        heatRes: 5,
-        durability: 5
-    })
-    const [editingKey, setEditingKey] = useState<FilamentKey | null>(null)
-
-    // Add Color State
-    const [addingColorTo, setAddingColorTo] = useState<FilamentKey | null>(null)
-    const [newColorHex, setNewColorHex] = useState('#ffffff')
-    const [newColorPrice, setNewColorPrice] = useState(0)
-
-    // Confirmation states
-    const [deletingMaterialKey, setDeletingMaterialKey] = useState<FilamentKey | null>(null)
-    const [deletingType, setDeletingType] = useState<string | null>(null)
-    const [deletingSupportType, setDeletingSupportType] = useState<string | null>(null)
-    const [newSupportType, setNewSupportType] = useState('')
+    } = useAdminStore(useShallow((state) => ({
+        filaments: state.filaments,
+        updateFilament: state.updateFilament,
+        addFilament: state.addFilament,
+        renameFilament: state.renameFilament,
+        removeFilament: state.removeFilament,
+        updateGlobalSettings: state.updateGlobalSettings,
+        electricityRate: state.electricityRate,
+        miscellaneousFee: state.miscellaneousFee,
+        supportMaterialPrice: state.supportMaterialPrice,
+        updateColorPricing: state.updateColorPricing,
+        addColorWithPricing: state.addColorWithPricing,
+        updateFilamentColors: state.updateFilamentColors,
+        updateColorHex: state.updateColorHex,
+        materialTypes: state.materialTypes,
+        addMaterialType: state.addMaterialType,
+        removeMaterialType: state.removeMaterialType,
+        supportTypes: state.supportTypes,
+        addSupportType: state.addSupportType,
+        removeSupportType: state.removeSupportType,
+        hasHydrated: state.hasHydrated,
+        fetchSettings: state.fetchSettings
+    })))
 
     useEffect(() => {
-        const supabase = createClient()
-        const checkUser = async () => {
-            try {
-                const { data: { user }, error } = await supabase.auth.getUser()
-                if (error) throw error
-                setUser(user)
-                setLoading(false)
-
-                const ADMIN_EMAILS_ENV = process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
-                const ADMINS = ADMIN_EMAILS_ENV.split(',').map(e => e.trim().toLowerCase())
-                const userEmail = user?.email?.toLowerCase() || ''
-                if (!user || !ADMINS.includes(userEmail)) {
-                    router.push('/')
-                }
-            } catch (err) {
-                console.error('Auth check failed:', err)
-                setLoading(false)
-                router.push('/')
-            }
-        }
-        checkUser().then(() => {
+        if (!authLoading && !isAdmin) {
+            router.push('/')
+        } else if (!authLoading && isAdmin) {
+            setLoading(false)
             fetchSettings()
-        })
-    }, [router, fetchSettings])
+        }
+    }, [isAdmin, authLoading, router, fetchSettings])
+
+    useEffect(() => {
+        if (hasHydrated) {
+            setLocalElec(electricityRate.toString())
+            setLocalMisc(miscellaneousFee.toString())
+            setLocalSupp(supportMaterialPrice.toString())
+        }
+    }, [hasHydrated, electricityRate, miscellaneousFee, supportMaterialPrice])
 
     const handleSaveFilament = async () => {
         if (!brandName || !materialType || isProcessing) return
@@ -156,10 +176,11 @@ export default function AdminMaterialsPage() {
         setNewColorPrice(filaments[key].pricePerGram > 0 ? filaments[key].pricePerGram : 0)
     }
 
-    const confirmAddColor = async (key: FilamentKey) => {
+    const confirmAddColor = async (targetKey: FilamentKey) => {
         setIsProcessing(true)
         try {
-            await addColorWithPricing(key, newColorHex, newColorPrice)
+            const priceVal = typeof newColorPrice === 'string' ? parseFloat(newColorPrice) || 0 : newColorPrice
+            await addColorWithPricing(targetKey, newColorHex, priceVal)
             setAddingColorTo(null)
             addToast('Color added successfully!', 'success')
         } catch (err) {
@@ -178,7 +199,7 @@ export default function AdminMaterialsPage() {
         await updateFilamentColors(key, currentColors.filter(c => c !== color))
     }
 
-    if (loading || !user || !hasHydrated) {
+    if (loading || !authUser || !hasHydrated) {
         return <Loader text={!hasHydrated ? '🔄 Syncing Admin Data...' : '🔐 Verifying Access...'} />
     }
 
@@ -195,10 +216,14 @@ export default function AdminMaterialsPage() {
                             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Electricity Rate (₹/hr)</label>
                             <input
                                 type="number"
-                                value={electricityRate}
-                                onChange={async (e) => {
+                                value={localElec}
+                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                onChange={(e) => setLocalElec(e.target.value)}
+                                onBlur={async () => {
+                                    const val = parseFloat(localElec) || 0
+                                    if (val === electricityRate) return
                                     setIsProcessing(true)
-                                    await updateGlobalSettings({ electricityRate: parseFloat(e.target.value) || 0 })
+                                    await updateGlobalSettings({ electricityRate: val })
                                     setIsProcessing(false)
                                 }}
                                 className={styles.numInput}
@@ -209,10 +234,14 @@ export default function AdminMaterialsPage() {
                             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>One-time Setup Fee (₹/print)</label>
                             <input
                                 type="number"
-                                value={miscellaneousFee}
-                                onChange={async (e) => {
+                                value={localMisc}
+                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                onChange={(e) => setLocalMisc(e.target.value)}
+                                onBlur={async () => {
+                                    const val = parseFloat(localMisc) || 0
+                                    if (val === miscellaneousFee) return
                                     setIsProcessing(true)
-                                    await updateGlobalSettings({ miscellaneousFee: parseFloat(e.target.value) || 0 })
+                                    await updateGlobalSettings({ miscellaneousFee: val })
                                     setIsProcessing(false)
                                 }}
                                 className={styles.numInput}
@@ -224,10 +253,14 @@ export default function AdminMaterialsPage() {
                             <input
                                 type="number"
                                 step="any"
-                                value={supportMaterialPrice}
-                                onChange={async (e) => {
+                                value={localSupp}
+                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                onChange={(e) => setLocalSupp(e.target.value)}
+                                onBlur={async () => {
+                                    const val = parseFloat(localSupp) || 0
+                                    if (val === supportMaterialPrice) return
                                     setIsProcessing(true)
-                                    await updateGlobalSettings({ supportMaterialPrice: parseFloat(e.target.value) || 0 })
+                                    await updateGlobalSettings({ supportMaterialPrice: val })
                                     setIsProcessing(false)
                                 }}
                                 className={styles.numInput}
@@ -352,8 +385,12 @@ export default function AdminMaterialsPage() {
                                                                         <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>₹</span>
                                                                         <input
                                                                             type="number"
-                                                                            value={filaments[key].colorPricing?.[color] || ''}
-                                                                            onChange={(e) => updateColorPricing(key, color, parseFloat(e.target.value) || 0)}
+                                                                            step="any"
+                                                                            value={filaments[key].colorPricing?.[color] ?? ''}
+                                                                            onChange={(e) => {
+                                                                                const val = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                                                                                updateColorPricing(key, color, val)
+                                                                            }}
                                                                             className={styles.numInput}
                                                                             disabled={!isEditingRow}
                                                                             style={{
@@ -402,9 +439,11 @@ export default function AdminMaterialsPage() {
                                                                     />
                                                                     <input
                                                                         type="number"
-                                                                        placeholder="₹/g"
-                                                                        value={newColorPrice || ''}
-                                                                        onChange={(e) => setNewColorPrice(parseFloat(e.target.value))}
+                                                                        step="any"
+                                                                        placeholder="Price/g"
+                                                                        value={newColorPrice}
+                                                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                                                        onChange={(e) => setNewColorPrice(e.target.value)}
                                                                         className={styles.numInput}
                                                                         style={{ width: '60px', padding: '4px 8px', fontSize: '0.9rem', border: 'none', background: 'rgba(0,0,0,0.3)' }}
                                                                     />
@@ -542,7 +581,8 @@ export default function AdminMaterialsPage() {
                                 type="number"
                                 step="any"
                                 value={newTypeDensity}
-                                onChange={(e) => setNewTypeDensity(parseFloat(e.target.value) || 0)}
+                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                onChange={(e) => setNewTypeDensity(e.target.value)}
                                 className={styles.input}
                                 style={{ width: '100%', marginTop: '8px' }}
                             />
@@ -557,12 +597,12 @@ export default function AdminMaterialsPage() {
                                             {prop === 'heatRes' ? 'Heat Resistance' : prop}: <span style={{ color: '#39ff14' }}>{newTypeProperties[prop]}</span>
                                         </label>
                                         <input
-                                            type="range"
-                                            min="1"
-                                            max="10"
+                                            type="number"
                                             value={newTypeProperties[prop]}
-                                            onChange={(e) => setNewTypeProperties({ ...newTypeProperties, [prop]: parseInt(e.target.value) })}
-                                            style={{ accentColor: '#39ff14' }}
+                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                            onChange={(e) => setNewTypeProperties({ ...newTypeProperties, [prop]: e.target.value })}
+                                            className={styles.numInput}
+                                            style={{ width: '100%', padding: '8px 12px' }}
                                         />
                                     </div>
                                 ))}
@@ -573,16 +613,28 @@ export default function AdminMaterialsPage() {
                             onClick={async () => {
                                 if (newMaterialType && !isProcessing) {
                                     setIsProcessing(true)
-                                    await addMaterialType({
-                                        name: newMaterialType,
-                                        density: newTypeDensity,
-                                        properties: newTypeProperties
-                                    })
-                                    setNewMaterialType('')
-                                    setNewTypeDensity(1.24)
-                                    setNewTypeProperties({ strength: 5, flexibility: 5, heatRes: 5, durability: 5 })
-                                    setIsProcessing(false)
-                                    addToast(`${newMaterialType} added`, 'success')
+                                    try {
+                                        const materialTypeData = {
+                                            name: newMaterialType,
+                                            density: typeof newTypeDensity === 'string' ? parseFloat(newTypeDensity) || 0 : newTypeDensity,
+                                            properties: {
+                                                strength: typeof newTypeProperties.strength === 'string' ? parseInt(newTypeProperties.strength) || 1 : newTypeProperties.strength,
+                                                flexibility: typeof newTypeProperties.flexibility === 'string' ? parseInt(newTypeProperties.flexibility) || 1 : newTypeProperties.flexibility,
+                                                heatRes: typeof newTypeProperties.heatRes === 'string' ? parseInt(newTypeProperties.heatRes) || 1 : newTypeProperties.heatRes,
+                                                durability: typeof newTypeProperties.durability === 'string' ? parseInt(newTypeProperties.durability) || 1 : newTypeProperties.durability
+                                            }
+                                        }
+                                        await addMaterialType(materialTypeData)
+                                        setNewMaterialType('')
+                                        setNewTypeDensity(1.24)
+                                        setNewTypeProperties({ strength: 5, flexibility: 5, heatRes: 5, durability: 5 })
+                                        addToast(`${newMaterialType} added`, 'success')
+                                    } catch (err: any) {
+                                        console.error('Failed to add material type:', err)
+                                        addToast(err.message || 'Error adding material type', 'error')
+                                    } finally {
+                                        setIsProcessing(false)
+                                    }
                                 }
                             }}
                             className="btn"

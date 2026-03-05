@@ -6,6 +6,7 @@ import { ShoppingCart, User, LogOut, FileText, Eye, Package, Shield, MessageCirc
 import styles from './Navbar.module.css'
 import { useCartStore } from '@/store/cartStore'
 import { useQueueStore } from '@/store/queueStore'
+import { useAuthStore } from '@/store/authStore'
 import { createClient } from '@/utils/supabase/client'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 
@@ -16,38 +17,13 @@ export default function Navbar() {
     const currentPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '')
     const menuRef = useRef<HTMLDivElement>(null)
     const items = useCartStore((state) => state.items)
-    const [user, setUser] = useState<SupabaseUser | null>(null)
+
+    // Central Auth State
+    const { user, isAdmin } = useAuthStore()
     const [userName, setUserName] = useState<string>('User')
     const cartCount = items.length
+
     useEffect(() => {
-        const supabase = createClient()
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-            if (user) {
-                // Initial load
-                useCartStore.getState().loadFromSupabase(user.id)
-            }
-        }
-        getUser()
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            setUser(session?.user ?? null)
-
-            if (event === 'SIGNED_IN' && session?.user) {
-                await useCartStore.getState().loadFromSupabase(session.user.id)
-            }
-
-            // Handle session expiry or logout
-            if (event === 'SIGNED_OUT' || ((event as string) === 'INITIAL_SESSION_MISSING' && pathname !== '/')) {
-                // If we were on a protected page (like cart/orders) and session is gone, 
-                // redirect to home and refresh to clear any sensitive state
-                if (pathname !== '/' && pathname !== '/login') {
-                    window.location.href = '/'
-                }
-            }
-        })
-
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setIsOpen(false)
@@ -59,10 +35,9 @@ export default function Navbar() {
         }
 
         return () => {
-            subscription.unsubscribe()
             document.removeEventListener('mousedown', handleClickOutside)
         }
-    }, [isOpen, pathname])
+    }, [isOpen])
 
     // Reactive Cart Loading & DB Name Fetching
     useEffect(() => {
@@ -75,14 +50,14 @@ export default function Navbar() {
                 if (data && data.full_name) {
                     setUserName(data.full_name)
                 } else {
-                    setUserName(user.user_metadata?.full_name || 'User')
+                    setUserName(user.name || 'User')
                 }
             }
             fetchUserName()
         } else {
             setUserName('User')
         }
-    }, [user?.id, user?.user_metadata?.full_name])
+    }, [user?.id, user?.name])
 
     const handleLogout = async () => {
         const supabase = createClient()
@@ -91,26 +66,10 @@ export default function Navbar() {
         useQueueStore.getState().purge()
 
         await supabase.auth.signOut()
-        setUser(null)
 
         // Force hard refresh to clear all states
         globalThis.location.href = '/'
     }
-
-    const [isAdmin, setIsAdmin] = useState(false)
-
-    useEffect(() => {
-        const checkAdminStatus = async () => {
-            if (user) {
-                const { isCurrentUserAdmin } = await import('@/app/admin/actions')
-                const status = await isCurrentUserAdmin()
-                setIsAdmin(status)
-            } else {
-                setIsAdmin(false)
-            }
-        }
-        checkAdminStatus()
-    }, [user])
 
     return (
         <nav className={styles.nav}>

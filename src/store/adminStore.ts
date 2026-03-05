@@ -56,6 +56,7 @@ interface AdminState {
     miscellaneousFee: number // INR per model
     supportMaterialPrice: number // INR per gram
     hasHydrated: boolean
+    isFetching: boolean // Internal flag to prevent overlapping fetches
     materialTypes: MaterialTypeConfig[]
     supportTypes: string[]
     setHasHydrated: (val: boolean) => void
@@ -91,6 +92,7 @@ export const useAdminStore = create<AdminState>()(
             miscellaneousFee: 50,
             supportMaterialPrice: 1.5,
             hasHydrated: false as boolean,
+            isFetching: false as boolean,
             materialTypes: [] as MaterialTypeConfig[],
             supportTypes: [] as string[],
             setHasHydrated: (hasHydrated: boolean) => set({ hasHydrated }),
@@ -324,6 +326,10 @@ export const useAdminStore = create<AdminState>()(
                 })
             },
             fetchSettings: async () => {
+                const state = get()
+                if (state.isFetching) return // Already fetching - ignore
+
+                set({ isFetching: true })
                 try {
                     const { createClient } = await import('@/utils/supabase/client')
                     const supabase = createClient()
@@ -368,7 +374,8 @@ export const useAdminStore = create<AdminState>()(
                             properties: t.properties || null
                         })),
                         supportTypes: (stRes.data || []).map((t: any) => t.name),
-                        hasHydrated: true
+                        hasHydrated: true,
+                        isFetching: false
                     }
 
                     if (cRes.data) {
@@ -381,7 +388,7 @@ export const useAdminStore = create<AdminState>()(
                     set(updates)
                 } catch (err) {
                     console.error('CRITICAL: Fetch failed', err)
-                    set({ hasHydrated: true })
+                    set({ hasHydrated: true, isFetching: false })
                 }
             }
         }),
@@ -391,7 +398,7 @@ export const useAdminStore = create<AdminState>()(
                 state?.setHasHydrated(true)
             },
             partialize: (state: any) => {
-                const { materialTypes, supportTypes, filaments, printers, hasHydrated, ...rest } = state
+                const { materialTypes, supportTypes, filaments, printers, hasHydrated, isFetching, ...rest } = state
                 return rest
             }
         }

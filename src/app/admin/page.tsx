@@ -12,8 +12,7 @@ import { useAdminStore } from '@/store/adminStore'
 import Link from 'next/link'
 import Loader from '@/components/Loader'
 
-const ADMIN_EMAILS_ENV = process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
-const ADMINS = ADMIN_EMAILS_ENV.split(',').map(email => email.trim().toLowerCase())
+// Removed client-side admin email list for security
 
 export default function AdminDashboard() {
     const router = useRouter()
@@ -83,17 +82,20 @@ export default function AdminDashboard() {
     const [savingBanner, setSavingBanner] = useState(false)
 
     useEffect(() => {
-        const supabase = createClient()
         const checkUser = async () => {
             try {
-                const { data: { user }, error } = await supabase.auth.getUser()
-                const userEmail = user?.email?.toLowerCase() || ''
-                if (error || !user || !ADMINS.includes(userEmail) || user.app_metadata?.provider !== 'email') {
-                    console.warn('[Admin] Unauthorized access attempt:', userEmail)
+                // Call server action to check admin status securely
+                const { isCurrentUserAdmin } = await import('./actions')
+                const isAdmin = await isCurrentUserAdmin()
+
+                if (!isAdmin) {
                     router.push('/')
                     return
                 }
-                setUser(prev => prev?.id === user.id ? prev : user)
+
+                const supabase = createClient()
+                const { data: { user } } = await supabase.auth.getUser()
+                setUser(prev => prev?.id === user?.id ? prev : user)
                 setLoading(false)
             } catch (err) {
                 console.error('[Admin] Auth Error:', err)
@@ -139,9 +141,11 @@ export default function AdminDashboard() {
     }
 
     const fetchData = async () => {
-        if (!user || !ADMINS.includes(user.email?.toLowerCase() || '')) return
         setRefreshing(true)
         try {
+            const { isCurrentUserAdmin } = await import('./actions')
+            const isAdmin = await isCurrentUserAdmin()
+            if (!isAdmin) return
             const [statsRes, finRes, configRes, policyRes] = await Promise.all([
                 getAdminStats(),
                 getAdminFinancials(),

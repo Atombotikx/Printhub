@@ -4,18 +4,28 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { useAdminStore, Printer } from '@/store/adminStore'
+import { useAuthStore } from '@/store/authStore'
 import styles from '../Admin.module.css'
 import { Plus, Trash2, Edit2, Save, X, AlertTriangle } from 'lucide-react'
 import { useToastStore } from '@/store/toastStore'
 import Loader from '@/components/Loader'
 
+import { useShallow } from 'zustand/react/shallow'
+
 export default function AdminPrintersPage() {
     const addToast = useToastStore((state) => state.addToast)
     const router = useRouter()
-    const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
 
-    const { printers, updatePrinterStatus, addPrinter, updatePrinter, removePrinter, fetchSettings } = useAdminStore()
+    const { printers, updatePrinterStatus, addPrinter, updatePrinter, removePrinter, fetchSettings } = useAdminStore(useShallow((state) => ({
+        printers: state.printers,
+        updatePrinterStatus: state.updatePrinterStatus,
+        addPrinter: state.addPrinter,
+        updatePrinter: state.updatePrinter,
+        removePrinter: state.removePrinter,
+        fetchSettings: state.fetchSettings
+    })))
+    const { user: authUser, isAdmin, isLoading: authLoading } = useAuthStore()
     const [newPrinterName, setNewPrinterName] = useState('')
     const [newPrinterType, setNewPrinterType] = useState('FDM')
     const [editingId, setEditingId] = useState<string | null>(null)
@@ -23,25 +33,13 @@ export default function AdminPrintersPage() {
     const [isProcessing, setIsProcessing] = useState(false)
 
     useEffect(() => {
-        const supabase = createClient()
-        const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
+        if (!authLoading && !isAdmin) {
+            router.push('/')
+        } else if (!authLoading && isAdmin) {
             setLoading(false)
-
-            const ADMIN_EMAILS_ENV = process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
-            const ADMINS = ADMIN_EMAILS_ENV.split(',').map(e => e.trim().toLowerCase())
-            const userEmail = user?.email?.toLowerCase() || ''
-            if (!user || !ADMINS.includes(userEmail)) {
-                router.push('/')
-            }
+            fetchSettings()
         }
-        checkUser()
-    }, [router])
-
-    useEffect(() => {
-        fetchSettings()
-    }, [fetchSettings])
+    }, [isAdmin, authLoading, router, fetchSettings])
 
     const handleSavePrinter = async () => {
         if (!newPrinterName || isProcessing) return
@@ -84,7 +82,7 @@ export default function AdminPrintersPage() {
         setNewPrinterType('FDM')
     }
 
-    if (loading || !user) return <Loader text="Verifying access..." />
+    if (loading || !authUser) return <Loader text="Verifying access..." />
 
     return (
         <div className="container" style={{ maxWidth: '100%', padding: 0 }}>
@@ -138,8 +136,11 @@ export default function AdminPrintersPage() {
                                             value={printer.status}
                                             onChange={async (e) => {
                                                 setIsProcessing(true)
-                                                await updatePrinterStatus(printer.id, e.target.value as Printer['status'])
-                                                setIsProcessing(false)
+                                                try {
+                                                    await updatePrinterStatus(printer.id, e.target.value as Printer['status'])
+                                                } finally {
+                                                    setIsProcessing(false)
+                                                }
                                             }}
                                             className={`${styles.statusSelect} ${styles[printer.status]}`}
                                         >
@@ -169,10 +170,13 @@ export default function AdminPrintersPage() {
                                                 <button onClick={() => setDeletingId(null)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '0.7rem' }}>Cancel</button>
                                                 <button onClick={async () => {
                                                     setIsProcessing(true)
-                                                    await removePrinter(printer.id)
-                                                    setDeletingId(null)
-                                                    setIsProcessing(false)
-                                                    addToast('Printer removed', 'info')
+                                                    try {
+                                                        await removePrinter(printer.id)
+                                                        setDeletingId(null)
+                                                        addToast('Printer removed', 'info')
+                                                    } finally {
+                                                        setIsProcessing(false)
+                                                    }
                                                 }} style={{ background: 'white', border: 'none', color: '#ff0055', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', fontWeight: 900, cursor: 'pointer' }}>Delete</button>
                                             </div>
                                         )}

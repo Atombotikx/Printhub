@@ -12,7 +12,7 @@ async function checkAdmin() {
     const ADMINS = ADMIN_EMAILS_ENV.split(',').map(e => e.trim().toLowerCase())
 
     if (!user || !ADMINS.includes(user.email?.toLowerCase() || '') || user.app_metadata?.provider !== 'email') {
-        throw new Error('Unauthorized: Admin access required via standard login')
+        throw new Error('Unauthorized: Admin access required via email login')
     }
     return supabase
 }

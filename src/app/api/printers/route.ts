@@ -60,7 +60,7 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    const ADMIN_EMAILS_ENV = process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
+    const ADMIN_EMAILS_ENV = process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
     const ADMINS = ADMIN_EMAILS_ENV.split(',').map(e => e.trim().toLowerCase())
     const isAdmin = user && ADMINS.includes(user.email?.toLowerCase() || '') && user.app_metadata?.provider === 'email'
 
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    const ADMIN_EMAILS_ENV = process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
+    const ADMIN_EMAILS_ENV = process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || ''
     const ADMINS = ADMIN_EMAILS_ENV.split(',').map(e => e.trim().toLowerCase())
     const isAdmin = user && ADMINS.includes(user.email?.toLowerCase() || '') && user.app_metadata?.provider === 'email'
 
