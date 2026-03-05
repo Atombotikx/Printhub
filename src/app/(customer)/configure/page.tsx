@@ -1208,7 +1208,7 @@ function ConfigureContent() {
                             <div className={styles.priceRow} style={{ marginTop: '16px' }}>
                                 <span style={{ fontSize: '18px', fontWeight: '600', color: 'white' }}>Total:</span>
                                 <span className={styles.price}>
-                                    {quantity > 1 ? (
+                                    {Number(quantity) > 1 ? (
                                         <span style={{ fontSize: '14px', opacity: 0.8, marginRight: '8px', fontWeight: 'normal' }}>
                                             {formatCurrency(detailedPrice.unitCost)} x {quantity} =
                                         </span>
