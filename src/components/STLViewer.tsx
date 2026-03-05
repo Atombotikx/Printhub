@@ -71,7 +71,7 @@ function Model({ geom, color = '#ffffff', showCrossSection = false, crossSection
                 clippingPlane.current.constant = (crossSectionHeight / 100) * size.z - (size.z / 2)
             } else {
                 clippingPlane.current.normal.set(0, -1, 0)
-                clippingPlane.current.constant = (crossSectionHeight / 100) * size.y
+                clippingPlane.current.constant = (crossSectionHeight / 100) * size.y - (size.y / 2)
             }
         }
     }, [geom, showCrossSection, crossSectionHeight, crossSectionAxis])
