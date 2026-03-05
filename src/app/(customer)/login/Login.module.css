@@ -1,0 +1,211 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    padding-top: 80px;
+    gap: 0;
+}
+
+.header {
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 32px;
+    position: relative;
+    text-align: center;
+}
+
+.backWrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+}
+
+.title {
+    margin: 0;
+    font-size: 32px;
+}
+
+.card {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 32px 40px 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    animation: fadeScaleUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes fadeScaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 32px;
+}
+
+.googleBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.googleBtn:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.googleIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.divider {
+    margin: 24px 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.divider span {
+    padding: 0 12px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 14px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.inputGroup {
+    position: relative;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.inputGroup input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px 12px 12px 42px;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.inputGroup input:focus {
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.forgotPassword {
+    text-align: right;
+    font-size: 13px;
+}
+
+.forgotPassword a {
+    color: rgba(255, 255, 255, 0.6);
+    transition: color 0.2s;
+}
+
+.forgotPassword a:hover {
+    color: white;
+}
+
+.submitBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--primary-color);
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+
+.submitBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(57, 255, 20, 0.3);
+}
+
+.submitBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.error {
+    background: rgba(255, 0, 85, 0.1);
+    color: #ff0055;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid rgba(255, 0, 85, 0.2);
+}
+
+.footer {
+    margin-top: 24px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,395 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+    position: relative;
+    min-height: 44px;
+}
+
+.backWrapper {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.rightWrapper {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.backLink {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.backLink:hover {
+    opacity: 1;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 40px;
+    align-items: start;
+}
+
+@media (max-width: 968px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.successOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    animation: fadeInOverlay 0.4s ease-out forwards;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+
+    to {
+        opacity: 1;
+        backdrop-filter: blur(10px);
+    }
+}
+
+.successCard {
+    text-align: center;
+    padding: 60px;
+    border-radius: 20px;
+    max-width: 500px;
+    animation: popIn 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.successIcon {
+    width: 80px;
+    height: 80px;
+    background: #00ff88;
+    color: black;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+}
+
+.successCard h2 {
+    margin-bottom: 16px;
+}
+
+.successCard p {
+    opacity: 0.7;
+    margin-bottom: 32px;
+}
+
+.cartItem {
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    transition: all 0.2s;
+}
+
+.selectedItem {
+    background: rgba(0, 255, 136, 0.05);
+    border-color: rgba(0, 255, 136, 0.2) !important;
+}
+
+.selectionArea {
+    display: flex;
+    align-items: center;
+}
+
+.itemInfo {
+    flex: 1;
+}
+
+.selectAllHeader {
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+/* Custom Checkbox */
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 35px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    user-select: none;
+    height: 24px;
+}
+
+.checkboxContainer input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 24px;
+    width: 24px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.checkboxContainer:hover input~.checkmark {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.checkboxContainer input:checked~.checkmark {
+    background-color: #00ff88;
+    border-color: #00ff88;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkboxContainer input:checked~.checkmark:after {
+    display: block;
+}
+
+.checkboxContainer .checkmark:after {
+    left: 8px;
+    top: 4px;
+    width: 6px;
+    height: 12px;
+    border: solid black;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.itemHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.itemMeta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 24px;
+}
+
+.metaItem {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.metaItem strong {
+    color: white;
+}
+
+.tagGroup {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.paramTag {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 100px;
+    color: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brimTag {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+    border-color: rgba(0, 255, 136, 0.2);
+}
+
+.supportTag {
+    background: rgba(0, 240, 255, 0.1);
+    color: #00f0ff;
+    border-color: rgba(0, 240, 255, 0.2);
+}
+
+.colorRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.colorStack {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.colorCircle {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+}
+
+.itemPriceSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+.quantity button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.6;
+}
+
+.quantity button:hover {
+    opacity: 1;
+}
+
+.price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.removeBtn {
+    background: none;
+    border: none;
+    color: #ff4757;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.removeBtn:hover {
+    opacity: 1;
+}
+
+.editBtn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editBtn:hover {
+    opacity: 1;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    opacity: 0.8;
+}
+
+.totalRow {
+    font-size: 1.25rem;
+    font-weight: 700;
+    opacity: 1;
+    color: var(--text-color);
+}
+
+.modal {
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    background: #111;
+    border-radius: 16px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: popIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 160px 20px;
+    flex: 1;
+}
+
+.emptyState h1 {
+    margin: 0 0 16px 0;
+}
+
+.emptyState p {
+    opacity: 0.6;
+    margin: 0 0 32px 0;
+    max-width: 400px;
+}

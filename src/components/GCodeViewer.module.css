@@ -1,0 +1,398 @@
+.container {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.viewer {
+    width: 100%;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 10;
+    backdrop-filter: blur(5px);
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--primary-color);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+.errorIcon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.controlsPanel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 280px;
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.controlGroup {
+    margin-bottom: 20px;
+}
+
+.controlGroup label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.playBtn {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.playBtn:hover {
+    transform: scale(1.05);
+}
+
+.rangeInput {
+    width: 100%;
+    height: 6px;
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    appearance: none;
+    outline: none;
+}
+
+.rangeInput::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+.viewControls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.groupLabel {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-right: 4px;
+}
+
+.viewBtn {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.viewBtn:hover {
+    background: var(--primary-color);
+    color: black;
+    border-color: var(--primary-color);
+}
+
+.toggles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.toggleBtn,
+.resetBtn {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.toggleBtn:hover,
+.resetBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: black;
+    font-weight: 500;
+}
+
+.active:hover {
+    background: var(--primary-color);
+    opacity: 0.9;
+}
+
+.resetBtn {
+    grid-column: span 2;
+    background: rgba(255, 59, 59, 0.2);
+    border-color: rgba(255, 59, 59, 0.3);
+    color: #ff6b6b;
+}
+
+.resetBtn:hover {
+    background: rgba(255, 59, 59, 0.3);
+}
+
+.error {
+    color: #ff4444;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    padding: 12px;
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.layerInfo {
+    color: white;
+    font-family: monospace;
+    font-size: 14px;
+    min-width: 120px;
+}
+
+.slider {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.colorRegions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.colorRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.colorIndicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.regionColorInput {
+    width: 40px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.regionColorInput::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.regionColorInput::-webkit-color-swatch {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.hexLabel {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+}
+
+/* Printer Animation */
+.printerScene {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.printBed {
+    position: absolute;
+    bottom: 0;
+    width: 160px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+}
+
+.modelGhost {
+    position: absolute;
+    bottom: 4px;
+    width: 80px;
+    height: 80px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.modelProgress {
+    position: absolute;
+    bottom: 4px;
+    width: 80px;
+    background: rgba(57, 255, 20, 0.1);
+    border: 2px solid var(--primary-color);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    transition: height 0.1s linear;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+}
+
+.modelProgress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(to bottom,
+            rgba(57, 255, 20, 0.1) 0px,
+            rgba(57, 255, 20, 0.1) 4px,
+            rgba(57, 255, 20, 0.3) 5px);
+}
+
+.nozzleAssembly {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none;
+    transition: bottom 0.1s linear;
+    z-index: 10;
+}
+
+.gantry {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nozzleHead {
+    position: relative;
+    width: 20px;
+    height: 24px;
+    background: #fff;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 60%, 50% 100%, 0% 60%);
+    animation: printMove 0.8s ease-in-out infinite alternate;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.nozzleHead::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--primary-color);
+}
+
+@keyframes printMove {
+    from {
+        transform: translateX(-30px);
+    }
+
+    to {
+        transform: translateX(30px);
+    }
+}
+
+.loadingStats {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}

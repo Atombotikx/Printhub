@@ -1,0 +1,111 @@
+.container {
+    padding: 120px 2rem 80px;
+    max-width: 900px;
+    margin: 0 auto;
+    min-height: 80vh;
+}
+
+.header {
+    margin-bottom: 3rem;
+    text-align: center;
+    position: relative;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.backWrapper {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.content {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 3rem;
+    line-height: 1.8;
+}
+
+.section {
+    margin-bottom: 3rem;
+}
+
+.section h2 {
+    color: #39ff14;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1rem;
+}
+
+.section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.section ul li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.section ul li::before {
+    content: "•";
+    color: #39ff14;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* FAQ Specific */
+.faqGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.faqItem {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.faqItem h3 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.faqItem p {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 100px 1rem 40px;
+    }
+
+    .content {
+        padding: 1.5rem;
+    }
+}

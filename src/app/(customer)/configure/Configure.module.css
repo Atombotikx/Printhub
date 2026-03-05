@@ -1,0 +1,852 @@
+.container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 80px 2rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    position: relative;
+    min-height: 44px;
+}
+
+.backWrapper {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+    font-size: 14px;
+    margin-bottom: 16px;
+    transition: opacity 0.2s;
+}
+
+.backLink:hover {
+    opacity: 0.7;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.mainGrid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 32px;
+    align-items: start;
+}
+
+/* Left Column - Viewer */
+.viewerSection {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+.viewerContainer {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.removeBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255, 0, 85, 0.2);
+    border: 1px solid rgba(255, 0, 85, 0.4);
+    color: #ff0055;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.removeBtn:hover {
+    background: rgba(255, 0, 85, 0.3);
+    transform: scale(1.05);
+}
+
+.parametersGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.paramCard {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.paramLabel {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+
+.paramValue {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.paramUnit {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: 4px;
+}
+
+.fileInfoCard {
+    grid-column: 1 / -1;
+}
+
+.fileInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fileName {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    word-break: break-all;
+}
+
+.fileSize {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Right Column - Configuration */
+.configSection {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.controlGroup {
+    margin-bottom: 20px;
+}
+
+.controlGroup label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.multiControlRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.multiControlRow .controlGroup {
+    margin-bottom: 0;
+}
+
+
+.colorPicker {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.colorChip {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.colorChip:hover {
+    transform: scale(1.1);
+}
+
+.colorChip.active {
+    border-color: white;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.colorInput {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.quantity span {
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+}
+
+.qBtn {
+    background: rgba(57, 255, 20, 0.1);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    color: var(--primary-color);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.qBtn:hover {
+    background: rgba(57, 255, 20, 0.2);
+    transform: scale(1.05);
+}
+
+.priceSection {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.priceRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.priceRow span:first-child {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.price {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.addToCartBtn {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Loading Animation */
+.uploadingContainer {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.printerScene {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.printBed {
+    position: absolute;
+    bottom: 0;
+    width: 160px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+}
+
+.modelGhost {
+    position: absolute;
+    bottom: 4px;
+    width: 80px;
+    height: 100px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.modelProgress {
+    position: absolute;
+    bottom: 4px;
+    width: 80px;
+    background: rgba(57, 255, 20, 0.1);
+    border: 2px solid var(--primary-color);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    transition: height 0.1s linear;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+}
+
+.modelProgress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(to bottom,
+            rgba(57, 255, 20, 0.1) 0px,
+            rgba(57, 255, 20, 0.1) 4px,
+            rgba(57, 255, 20, 0.3) 5px);
+}
+
+.nozzleAssembly {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none;
+    transition: bottom 0.1s linear;
+    z-index: 10;
+}
+
+.gantry {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nozzleHead {
+    position: relative;
+    width: 20px;
+    height: 24px;
+    background: #fff;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 60%, 50% 100%, 0% 60%);
+    animation: printMove 0.8s ease-in-out infinite alternate;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.nozzleHead::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--primary-color);
+}
+
+@keyframes printMove {
+    from {
+        transform: translateX(-30px);
+    }
+
+    to {
+        transform: translateX(30px);
+    }
+}
+
+.uploadStats {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .mainGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .configSection {
+        position: static;
+    }
+
+    .parametersGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.compareBtn {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(57, 255, 20, 0.4);
+    color: var(--primary-color);
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.compareBtn:hover {
+    background: rgba(57, 255, 20, 0.1);
+    border-style: solid;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+}
+
+.comparisonContainer {
+    margin-bottom: 24px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.comparisonTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+    padding: 10px 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.comparisonTable th {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparisonTable td {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.labelWithAction {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.amsGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.amsSlot {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.amsSlotActive {
+    transform: scale(1.1);
+}
+
+.amsColorDisplay {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s;
+}
+
+.amsSlotActive .amsColorDisplay {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+}
+
+.categoryTitle {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
+    margin: 20px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brandGroups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 16px;
+}
+
+.brandGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.brandName {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.3px;
+}
+
+.amsRemove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    background: #ff0055;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 0, 85, 0.3);
+}
+
+.amsAdd {
+    width: 36px;
+    height: 36px;
+    border: 1px dashed rgba(57, 255, 20, 0.4);
+    background: rgba(57, 255, 20, 0.05);
+    color: var(--primary-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.amsAdd:hover {
+    background: rgba(57, 255, 20, 0.1);
+    border-style: solid;
+}
+
+.colorPresets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.toggle.active {
+    background: var(--primary-color);
+    color: black;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+}
+
+.greenToggle {
+    background: rgba(57, 255, 20, 0.05);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    color: var(--primary-color);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.greenToggle:hover {
+    background: rgba(57, 255, 20, 0.15);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+}
+
+.greenToggle.active {
+    background: var(--primary-color);
+    color: black;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+}
+
+.greenBtn {
+    background: rgba(57, 255, 20, 0.05);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    color: var(--primary-color);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.greenBtn:hover {
+    background: rgba(57, 255, 20, 0.15);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+}
+
+.greenBtn.active {
+    background: var(--primary-color);
+    color: black;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+}
+
+.warningBanner {
+    width: 100%;
+    background: rgba(255, 174, 0, 0.1);
+    border: 1px solid rgba(255, 174, 0, 0.3);
+    color: #ffae00;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 16px 0;
+    border-left: 4px solid #ffae00;
+}
+
+.sliderContainer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 12px;
+    border-radius: 8px;
+}
+
+.slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+.sliderValue {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color);
+    min-width: 40px;
+}
+
+.largeComparison {
+    margin-top: 60px;
+    padding: 60px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.comparisonTitle {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 48px;
+    background: linear-gradient(to right, #fff, var(--primary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.comparisonGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.comparisonCard {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tab Switcher for STL/G-Code */
+.tabSwitcher {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+}
+
+.tab {
+    flex: 1;
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.activeTab {
+    flex: 1;
+    padding: 12px 20px;
+    background: var(--primary-color);
+    border: none;
+    color: black;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 240, 255, 0.3);
+}
+
+.gcodePreview {
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.addToCartBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+}

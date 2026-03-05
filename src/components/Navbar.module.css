@@ -1,0 +1,312 @@
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(5, 5, 5, 0.4);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 2rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+/* Atom Animation */
+.atomContainer {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nucleus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--primary-color), 0 0 25px var(--primary-color);
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    animation: NucleusPulse 2s ease-in-out infinite;
+}
+
+@keyframes NucleusPulse {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0.8;
+    }
+}
+
+.orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    transform: translate(-50%, -50%) rotateX(75deg);
+}
+
+.electron {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--primary-color);
+    animation: orbit1 2s linear infinite;
+}
+
+@keyframes orbit1 {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg) translateX(18px) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg) translateX(18px) rotate(-360deg);
+    }
+}
+
+.loginBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.loginBtn:hover {
+    background: var(--surface-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .loginBtn span {
+        display: none;
+    }
+}
+
+.userSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.userName {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.logoutBtn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.logoutBtn:hover {
+    color: #ff0055;
+    background: rgba(255, 0, 85, 0.1);
+}
+
+.links {
+    display: flex;
+    gap: 32px;
+}
+
+.link {
+    color: #fff;
+    opacity: 0.7;
+    transition: all 0.2s;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.link:hover {
+    opacity: 1;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.iconBtn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.iconBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--glass-border);
+}
+
+.badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--accent-color);
+    color: white;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.menuBtn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    z-index: 1001;
+}
+
+.menuBtn span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    transform-origin: center;
+}
+
+.menuBtn.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+    background: var(--primary-color);
+}
+
+.menuBtn.active span:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.menuBtn.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+    background: var(--primary-color);
+}
+
+.mobileMenu {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 300px;
+    max-width: 90vw;
+    background: rgba(5, 5, 5, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 8px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    transform-origin: top right;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+    pointer-events: none;
+    z-index: 999;
+}
+
+.mobileMenu.open {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: all;
+}
+
+.menuItem {
+    font-size: 1rem;
+    padding: 12px 16px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.menuItem:hover {
+    background: rgba(0, 240, 255, 0.1);
+    color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .links {
+        display: none;
+    }
+
+
+}

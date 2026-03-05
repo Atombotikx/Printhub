@@ -1,0 +1,487 @@
+.container {
+    padding: 120px 2rem 60px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+.pageHeader {
+    max-width: 1300px;
+    margin: 0 auto 48px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.headerLeft {
+    flex: 0 0 120px;
+}
+
+.headerContent {
+    flex: 1;
+    text-align: center;
+}
+
+.headerRight {
+    flex: 0 0 120px;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 4px;
+    font-size: 0.9rem;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.splitLayout {
+    display: flex;
+    gap: 32px;
+    height: calc(100vh - 220px);
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.panelHeader {
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panelHeader h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.countBadge {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.panelContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Custom Scrollbar */
+.panelContent::-webkit-scrollbar {
+    width: 6px;
+}
+
+.panelContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.panelContent::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.panelContent::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.orderCard {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 100px auto;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+}
+
+.orderCard:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(57, 255, 20, 0.3);
+}
+
+.orderIdInfo h2 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-family: monospace;
+    color: white;
+}
+
+.orderDate {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.trackingInfo {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+}
+
+.trackingLabel {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.trackingVal {
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: #39ff14;
+    font-weight: 700;
+}
+
+.trackingVal.none {
+    color: rgba(255, 255, 255, 0.2);
+    font-weight: 400;
+}
+
+.statusBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.statusBadge.processing {
+    background: rgba(255, 174, 0, 0.1);
+    color: #ffae00;
+    border: 1px solid rgba(255, 174, 0, 0.2);
+}
+
+.statusBadge.printing {
+    background: rgba(57, 255, 20, 0.1);
+    color: #39ff14;
+    border: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.statusBadge.delivered {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.statusBadge.ordered {
+    background: rgba(0, 112, 243, 0.1);
+    color: #0070f3;
+    border: 1px solid rgba(0, 112, 243, 0.2);
+}
+
+.statusBadge.payment_confirmed {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.statusBadge.cancelled {
+    background: rgba(255, 0, 85, 0.1);
+    color: #ff0055;
+    border: 1px solid rgba(255, 0, 85, 0.2);
+}
+
+.priceSection {
+    text-align: right;
+}
+
+.priceLabel {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.priceVal {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.trackBtn {
+    padding: 8px 16px;
+    background: white;
+    color: black;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.contactBtn {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-decoration: none;
+    cursor: pointer;
+    min-width: 36px;
+    height: 36px;
+}
+
+.contactBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 1000px) {
+    .orderCard {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .mainInfo,
+    .priceSection,
+    .actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .priceSection {
+        text-align: left;
+    }
+}
+
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.emptyState h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.reprintBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(57, 255, 20, 0.1);
+    color: var(--primary-color);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: auto;
+}
+
+.reprintBtn:hover {
+    background: rgba(57, 255, 20, 0.2);
+    border-color: rgba(57, 255, 20, 0.5);
+    transform: translateY(-2px);
+}
+
+.payNowBtn {
+    padding: 8px 16px;
+    background: #39ff14;
+    color: black;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(57, 255, 20, 0.2);
+}
+
+.payNowBtn:hover {
+    background: #32e012;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(57, 255, 20, 0.3);
+}
+
+.spin {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    will-change: transform, opacity;
+}
+
+.modal {
+    background: #111;
+    border: 1px solid #333;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal h3 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.modal p {
+    color: #aaa;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.modalActions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.cancelBtn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+    background: #222;
+}
+
+.confirmBtn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: #ff4757;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.confirmBtn:hover {
+    background: #ff6b81;
+    transform: translateY(-1px);
+}
+
+.cancelBtnSmall {
+    padding: 8px 16px;
+    background: transparent;
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelBtnSmall:hover {
+    background: rgba(255, 71, 87, 0.1);
+    border-color: #ff4757;
+}
+
+.filterBar {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.filterBtn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.filterBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.filterBtn.active {
+    background: rgba(57, 255, 20, 0.1);
+    border-color: #39ff14;
+    color: #39ff14;
+}

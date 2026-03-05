@@ -1,0 +1,185 @@
+.wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background-color: #050505;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+
+
+.videoLayer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: 0;
+    filter: brightness(0.6) blur(16px);
+    /* Increased blur */
+}
+
+/* Removed animation for debugging */
+.imageLayer.active {
+    opacity: 1;
+}
+
+@keyframes panZoom {
+    0% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1.2);
+    }
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    /* Dark overlay for text contrast */
+    z-index: 1;
+}
+
+.container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.mesh {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* Made gradients much more subtle */
+    background-image:
+        radial-gradient(at 0% 0%, rgba(112, 0, 255, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(0, 240, 255, 0.05) 0px, transparent 50%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+.glow {
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.05) 0%, transparent 70%);
+    animation: moveGlow 25s infinite alternate;
+    z-index: 4;
+}
+
+.glow2 {
+    position: absolute;
+    bottom: 20%;
+    right: 30%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(112, 0, 255, 0.05) 0%, transparent 70%);
+    animation: moveGlow 30s infinite alternate-reverse;
+    z-index: 4;
+}
+
+@keyframes moveGlow {
+    0% {
+        transform: translate(-10%, -10%) scale(1);
+    }
+
+    100% {
+        transform: translate(10%, 10%) scale(1.2);
+    }
+}
+
+.particle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    animation: float linear infinite;
+    pointer-events: none;
+    box-shadow: 0 0 10px white;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) scale(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.3;
+        transform: translateY(-20px) scale(1);
+    }
+
+    90% {
+        opacity: 0.3;
+        transform: translateY(-180px) scale(1);
+    }
+
+    100% {
+        transform: translateY(-200px) scale(0);
+        opacity: 0;
+    }
+}
+
+.techGrid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 50px 50px;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    z-index: 2;
+    pointer-events: none;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+}
+
+.scanningLine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    opacity: 0.5;
+    z-index: 3;
+    animation: scan 8s linear infinite;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+@keyframes scan {
+    0% {
+        top: 0%;
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.5;
+    }
+
+    90% {
+        opacity: 0.5;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}

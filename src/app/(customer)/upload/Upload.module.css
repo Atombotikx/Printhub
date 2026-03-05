@@ -1,0 +1,138 @@
+.dropzone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 60px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: fadeScaleUp 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes fadeScaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.98) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.dropzone:hover,
+.dropzone.dragging {
+    border-color: var(--primary-color);
+    background: rgba(57, 255, 20, 0.05);
+}
+
+.dropzone p {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.dropzone span {
+    font-size: 0.9rem;
+    opacity: 0.5;
+}
+
+.queueList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.queueItem {
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s;
+    animation: fadeScaleUp 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.queueItem:hover {
+    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.queueItemIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.queueItemInfo {
+    flex: 1;
+}
+
+.queueItemInfo h3 {
+    margin: 0 0 6px 0;
+    font-size: 1.1rem;
+}
+
+.queueItemMeta {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.queueItemActions {
+    display: flex;
+    gap: 12px;
+}
+
+.removeBtn {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 85, 0.2);
+    background: rgba(255, 0, 85, 0.1);
+    color: #ff0055;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.removeBtn:hover {
+    background: rgba(255, 0, 85, 0.2);
+    transform: scale(1.05);
+}
+
+.removeCartBtn {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 85, 0.2);
+    background: rgba(255, 0, 85, 0.05);
+    color: #ff0055;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.removeCartBtn:hover {
+    background: rgba(255, 0, 85, 0.15);
+}
