@@ -61,7 +61,8 @@ export default function Testimonials() {
 
         // Check if user is logged in
         const supabase = createClient()
-        supabase.auth.getUser().then(({ data: { user } }) => {
+        supabase.auth.getUser().then((res: any) => {
+            const user = res?.data?.user
             if (user) {
                 setLoggedIn(true)
                 const fullName = user.user_metadata?.full_name || user.email?.split('@')[0] || ''

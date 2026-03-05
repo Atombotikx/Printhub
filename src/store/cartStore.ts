@@ -261,7 +261,7 @@ export const useCartStore = create<CartState>()(
                     const localItems = get().items
 
                     if (cartItems && cartItems.length > 0) {
-                        const dbItems: CartItem[] = cartItems.map(item => ({
+                        const dbItems: CartItem[] = cartItems.map((item: any) => ({
                             id: item.id,
                             fileName: item.file_name,
                             fileUrl: item.file_url,
